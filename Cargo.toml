@@ -1,0 +1,8 @@
+[package]
+name = "sf-rs"
+version = "0.1.0"
+authors = ["sos"]
+edition = "2018"
+
+[dependencies]
+mysql = "*"

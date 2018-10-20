@@ -1,6 +1,11 @@
 use mysql::{self, params};
 
+extern crate time;
+
 mod database;
+mod snowflake;
+
+use crate::snowflake::SnowFlakeId;
 
 use self::database::{
     WorkerNode, 
@@ -12,6 +17,8 @@ use self::database::{
 };
 
 fn main() {
+    println!("{:x}", -1i64 ^ (-1i64 << 12));
+    println!("macro timestamp: {}", SnowFlakeId::curr_time_macro());
     let pool = mysql::Pool::new(MYSQL_CONN); 
     match pool {
         Ok(ref _r) => println!("exec ok"),

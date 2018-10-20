@@ -56,13 +56,12 @@ impl Database {
         match pool {
             Ok(ref _r) => println!("exec ok"),
             Err(ref e) => {
-                println!("{}", e.to_string());
-                return;
+                panic!("{}", e.to_string());
             },
         }
 
         Database {
-            pool
+            pool: pool.unwrap(),
         }
     }
 }

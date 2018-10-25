@@ -94,6 +94,7 @@ impl SnowFlakeId {
     }
 }
 
+#[allow(unused_imports)]
 mod test {
     use crate::snowflake::{self, SnowFlakeId};
     use std::thread;
@@ -113,8 +114,8 @@ mod test {
     fn multi_thread(){
 
         let now = Instant::now();
-        let mut id_gen = SnowFlakeId::new_multi_thread(2, snowflake::STANDARD_EPOCH);
-        for i in 1 .. 10{
+        let id_gen = SnowFlakeId::new_multi_thread(2, snowflake::STANDARD_EPOCH);
+        for _i in 1 .. 10{
             let t = id_gen.clone();
             thread::spawn(move || {
                 for _ in 1..1000 {

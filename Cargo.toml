@@ -5,5 +5,4 @@ authors = ["sos"]
 edition = "2018"
 
 [dependencies]
-mysql = "*"
 time = "*"

@@ -51,7 +51,7 @@ impl SnowFlakeId {
     }
 
     pub fn generate_id(&mut self) -> Result<u64, String> {
-        let mut curr_timestamp = SnowFlakeId::curr_time_macro();
+        let mut curr_timestamp = SnowFlakeId::curr_time_millisec();
 
         if curr_timestamp < self.last_timestamp {
             return  Err(format!("Clock moved backwards.  Refusing to generate id for {} milliseconds", self.last_timestamp));
@@ -61,7 +61,7 @@ impl SnowFlakeId {
             self.sequence = (self.sequence + 1) & SEQUENCE_MASK;
             if self.sequence == 0 {
                 if curr_timestamp == self.last_timestamp {
-                    curr_timestamp = self.wait_for_next_macro_sec();
+                    curr_timestamp = self.wait_for_next_milli_sec();
                 }
             }
         } else {
@@ -76,17 +76,17 @@ impl SnowFlakeId {
         Ok(uid)
     }
 
-    pub fn wait_for_next_macro_sec(&self) -> u64 {
-        let mut curr_timestamp = SnowFlakeId::curr_time_macro();
+    pub fn wait_for_next_milli_sec(&self) -> u64 {
+        let mut curr_timestamp = SnowFlakeId::curr_time_millisec();
 
         while self.last_timestamp >= curr_timestamp {
-            curr_timestamp = SnowFlakeId::curr_time_macro();
+            curr_timestamp = SnowFlakeId::curr_time_millisec();
         }
 
         curr_timestamp
     }
 
-    pub fn curr_time_macro() -> u64 {
+    pub fn curr_time_millisec() -> u64 {
         let time_spec = time::get_time();
         let mut macro_sec = (time_spec.sec as u64) * 1000u64;
         macro_sec += (time_spec.nsec as u64) / 1000_000u64;
@@ -104,30 +104,37 @@ mod test {
     fn loop_test(){
         let mut id_gen = SnowFlakeId::new(1, snowflake::STANDARD_EPOCH);
         println!("{:?}",&id_gen);
+        let now = Instant::now();
         for _ in 1..1000 {
             let t  = &mut id_gen;
             assert!(t.generate_id().is_ok());
         }
+        let elapsed = now.elapsed();
+        println!("single thread generate 1000 ids cost {}.{:09} s",elapsed.as_secs(), elapsed.subsec_nanos());
     }
 
     #[test]
     fn multi_thread(){
-
-        let now = Instant::now();
         let id_gen = SnowFlakeId::new_multi_thread(2, snowflake::STANDARD_EPOCH);
-        for _i in 1 .. 10{
+        let mut ths = Vec::new();
+        for i in 1 .. 10{
             let t = id_gen.clone();
-            thread::spawn(move || {
+            ths.push(thread::spawn(move || {
+                let now = Instant::now();
                 for _ in 1..1000 {
                     let mut gen = t.lock().unwrap();
                     let id = gen.generate_id();
                     assert!(id.is_ok());
                     //println!("{:?}",id.unwrap());
                 }
-            });
+                let elapsed = now.elapsed();
+                println!("multi thread:[{}] generate 1000 ids cost {}.{:09} s", i, elapsed.as_secs(), elapsed.subsec_nanos());
+            }));
         }
 
-        let elapsed = now.elapsed();
-        println!("{}.{}",elapsed.as_secs(), elapsed.subsec_nanos());
+        for t in ths {
+            t.join();
+        }
+
     }
 }

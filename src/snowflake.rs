@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 
 // temp var for test
 #[allow(dead_code)]
-const STANDARD_EPOCH: u64 = 1514736000_000u64;
+pub const STANDARD_EPOCH: u64 = 1514736000_000u64;
 
 // machine id's bit
 #[allow(dead_code)]

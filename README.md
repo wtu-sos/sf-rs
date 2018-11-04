@@ -20,37 +20,49 @@ extern create snowflake_rs;
 
 single thread example
 ```rust
-	let mut id_gen = SnowFlakeId::new(1, snowflake::STANDARD_EPOCH);
+extern crate snowflake_rs;
+
+use std::thread;
+use snowflake_rs::{SnowFlakeId, STANDARD_EPOCH};
+
+fn main() {
+	let mut id_gen = SnowFlakeId::new(1, STANDARD_EPOCH);
 	println!("{:?}",&id_gen);
-	let now = Instant::now();
 	for _ in 1..1000 {
-		let t  = &mut id_gen;
-		assert!(t.generate_id().is_ok());
+		let id = id_gen.generate_id();
+		assert!(id.is_ok());
+		println!("{:?}",id.unwrap());
 	}
-	let elapsed = now.elapsed();
-	println!("single thread generate 1000 ids cost {}.{:09} s",elapsed.as_secs(), elapsed.subsec_nanos());
+}
 
 ```
 
 multi thread example
 ```rust
-    let id_gen = SnowFlakeId::new_multi_thread(2, STANDARD_EPOCH);
-    let mut ths = Vec::new();
-    for _i in 1 .. 10{
-        let t = id_gen.clone();
-        ths.push(thread::spawn(move || {
-            for _ in 1..1000 {
-                let mut gen = t.lock().unwrap();
-                let id = gen.generate_id();
-                assert!(id.is_ok());
-                println!("{:?}",id.unwrap());
-            }
-        }));
-    }
+extern crate snowflake_rs;
 
-    for t in ths {
-        t.join();
-    }
+use std::thread;
+use snowflake_rs::{SnowFlakeId, STANDARD_EPOCH};
+
+fn main() {
+  let id_gen = SnowFlakeId::new_multi_thread(2, STANDARD_EPOCH);
+  let mut ths = Vec::new();
+  for _i in 1 .. 10{
+	  let t = id_gen.clone();
+	  ths.push(thread::spawn(move || {
+		  for _ in 1..1000 {
+			  let mut gen = t.lock().unwrap();
+			  let id = gen.generate_id();
+			  assert!(id.is_ok());
+			  println!("{:?}",id.unwrap());
+		  }
+	  }));
+  }
+
+  for t in ths {
+⚠         t.join();
+  }
+}
 
 ```
 

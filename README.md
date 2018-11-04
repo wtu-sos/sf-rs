@@ -49,13 +49,13 @@ fn main() {
   let mut ths = Vec::new();
   for _i in 1 .. 10{
     let t = id_gen.clone();
-	  ths.push(thread::spawn(move || {
-        for _ in 1..1000 {
-          let mut gen = t.lock().unwrap();
-          let id = gen.generate_id();
-          assert!(id.is_ok());
-		  println!("{:?}",id.unwrap());
-        }
+      ths.push(thread::spawn(move || {
+      for _ in 1..1000 {
+        let mut gen = t.lock().unwrap();
+        let id = gen.generate_id();
+        assert!(id.is_ok());
+        println!("{:?}",id.unwrap());
+      }
     }));
   }
 

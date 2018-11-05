@@ -6,4 +6,4 @@ edition = "2018"
 license = "Apache-2.0"
 
 [dependencies]
-time = "0.1"
+time = "0.1.40"

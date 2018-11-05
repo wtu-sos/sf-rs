@@ -4,6 +4,11 @@ version = "0.1.0"
 authors = ["sos"]
 edition = "2018"
 license = "Apache-2.0"
+homepage = "https://github.com/wtu-sos/sf-rs"
+repository = "https://github.com/wtu-sos/sf-rs"
+description = """
+Reimplement snowflake in rust
+"""
 
 [dependencies]
 time = "0.1.40"

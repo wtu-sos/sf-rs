@@ -76,7 +76,7 @@ impl SnowFlakeId {
         Ok(uid)
     }
 
-    pub fn wait_for_next_milli_sec(&self) -> u64 {
+    fn wait_for_next_milli_sec(&self) -> u64 {
         let mut curr_timestamp = SnowFlakeId::curr_time_millisec();
 
         while self.last_timestamp >= curr_timestamp {
@@ -86,11 +86,11 @@ impl SnowFlakeId {
         curr_timestamp
     }
 
-    pub fn curr_time_millisec() -> u64 {
+    fn curr_time_millisec() -> u64 {
         let time_spec = time::get_time();
-        let mut macro_sec = (time_spec.sec as u64) * 1000u64;
-        macro_sec += (time_spec.nsec as u64) / 1000_000u64;
-        macro_sec
+        let mut milli_sec = (time_spec.sec as u64) * 1000u64;
+        milli_sec += (time_spec.nsec as u64) / 1000_000u64;
+        milli_sec
     }
 }
 

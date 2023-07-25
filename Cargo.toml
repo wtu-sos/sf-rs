@@ -11,4 +11,3 @@ Reimplement snowflake in rust
 """
 
 [dependencies]
-time = "0.1.40"
